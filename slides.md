@@ -73,7 +73,7 @@ fonts:
   - https://bundler.io/blog/2023/01/31/rust-gem-skeleton.html
 
 - GitHub: https://github.com/fs0414/rfmt
-  - いまStrt数55くらい
+  - いまStar数55くらい
 - RubyGems: https://rubygems.org/gems/rfmt
   - 資料書いてる時で9937 installs
 - Zenn: https://zenn.dev/soramarjr/articles/0b2464bc09b643
