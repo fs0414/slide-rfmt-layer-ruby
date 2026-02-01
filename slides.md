@@ -9,7 +9,7 @@ shikiConfig:
 drawings:
   persist: false
 transition: slide-left
-title: プレゼンテーションタイトル
+title: rfmt Ruby Layer
 mdc: true
 fonts:
   sans: 'Roboto'
@@ -18,25 +18,23 @@ fonts:
 ---
 
 <CoverSlide
-  title="プレゼンテーションタイトル"
-  event="イベント名"
+  title="rfmt Ruby Layer"
   author="fujitani sora"
 />
-
-<!--
-スピーカーノート: ここにプレゼンテーションノートを書きます
--->
 
 ---
 
 <div style="padding: 0 8%">
 
-## about me
+## <span style="color: oklch(0.7 0.15 215)">fujitani sora</span>
 
 <div class="grid grid-cols-[1fr_1fr] items-start gap-8">
   <div>
-    <p class="text-2xl font-bold mb-4" style="color: oklch(0.7 0.15 215)">fujitani sora</p>
     <div class="flex flex-col gap-3 text-lg font-semibold">
+      <div class="flex items-center gap-2">
+        <carbon-person class="text-lg" />
+        <span>2001（24）</span>
+      </div>
       <div class="flex items-center gap-2">
         <carbon-building class="text-lg" />
         <span>toridori inc engineer</span>
@@ -64,150 +62,376 @@ fonts:
   </div>
 </div>
 
-<div class="mt-6 text-sm text-gray-400">
-  ここに最近のTipsを記載
 </div>
+
+---
+
+# rfmt
+
+- 高速なRuby code formatter
+- RubyGems Rust Extentionを使用し、Code ModuleをRustで実装
+  - https://bundler.io/blog/2023/01/31/rust-gem-skeleton.html
+
+- GitHub: https://github.com/fs0414/rfmt
+  - いまStrt数55くらい
+- RubyGems: https://rubygems.org/gems/rfmt
+  - 資料書いてる時で9937 installs
+- Zenn: https://zenn.dev/soramarjr/articles/0b2464bc09b643
+
+---
+
+# Architecture
+
+<TwoColumnLayout>
+  <template #left>
+    <div style="padding-top: 10%;">
+      <ul>
+        <li><strong>Ruby Layer</strong>
+          <li>CLI, LSP Integration</li>
+          <li>Config</li>
+          <li>Cache</li>
+          <li>PrismBridge Module によるAST Parse</li>
+        </li>
+        <li><strong>FFI Boundary</strong>
+          <li>Magnus + rb_sys で Ruby ↔ Rust をJSON経由で接続</li>
+        </li>
+        <li><strong>Rust Layer</strong>
+          <li>Emitterによる具体的なformat処理</li>
+        </li>
+      </ul>
+      <br/>
+      <h5>今日はこのRuby layerの全体的な話</h5>
+    </div>
+  </template>
+  <template #right>
+    <img src="/architecture.png" alt="rfmt アーキテクチャ図" style="width: 100%;" />
+  </template>
+</TwoColumnLayout>
+
+---
+
+# データフロー
+
+<div class="text-2xl leading-loose">
+
+1. **Ruby source code** を受け取る
+2. Prism でパースして **AST** を取得
+3. PrismBridge で AST を走査し、Rust が処理できる **JSON** に変換
+4. JSON を FFI 経由で Rust に渡す
+5. Rust から返ってきた結果をファイル書き込み or 標準出力
 
 </div>
 
 ---
+layout: center
 class: slide-gradient-bg
 ---
 
-# 見出しスライド
+# <span class="gradient-heading">PrismBridge</span>
 
-## サブ見出し
-
-通常のテキストはこのように表示されます。oklch color spaceを使用した美しいカラーパレットが特徴です。
-
-- <EmojiText emoji="✨">リスト項目1</EmojiText>
-- <EmojiText emoji="🎨">リスト項目2</EmojiText>
-  - ネストしたリスト
-  - ネストしたリスト2
-- <EmojiText emoji="🚀">リスト項目3</EmojiText>
-
-> これは引用テキストです。
-> 重要な情報を強調するのに便利です。
+AST parseとドメインモデル変換
 
 ---
 
-# コードハイライト
+# PrismBridge とは
 
-TypeScriptのコード例:
+`lib/rfmt/prism_bridge.rb` / `lib/rfmt/prism_node_extractor.rb`
 
-```ts {2-4|6-8|all}
-// コードハイライトの例
-interface User {
-  name: string
-  age: number
-}
+- source codeを入力にPrism parserを呼び出し、ASTを受け取る
+- 各ノードからRfmt内部が利用したいドメインモデルに合わせたメタデータを抽出
+    - クラス名、メソッド名、パラメータ数、etc.
+    - ロケーション情報 (行番号、カラム、オフセット)
+- コメント情報の収集とシリアライズ
 
-const user: User = {
-  name: 'Taro',
-  age: 25
-}
-
-console.log(user)
-```
-
-<v-click>
-
-JetBrains Mono フォントでコードを見やすく表示
-
-</v-click>
+**PrismBridgeの中間層を入れることで、Prismとの依存を吸収し、Parserを差し替えられる設計**
 
 ---
-layout: two-cols
----
 
-# 2カラムレイアウト
+# PrismとのIntegration
 
-左側のコンテンツ
+- PrismはRuby標準のパーサーGem
+- Ruby側でPrismを呼ぶのが最も自然
+- RustからPrismを呼ぶにはRuby VMを経由するFFIが必要で複雑になる
+- Ruby側でPrism ASTを走査し、Rust側が処理しやすい形式への事前処理を行う役割
 
-- <EmojiText emoji="📝">ポイント1</EmojiText>
-- <EmojiText emoji="💡">ポイント2</EmojiText>
-- <EmojiText emoji="🎯">ポイント3</EmojiText>
+`lib/rfmt/prism_bridge.rb`
 
-::right::
-
-# 右側
-
-右側のコンテンツ
-
-```js
-// コード例
-const hello = 'world'
-console.log(hello)
+```ruby
+def self.parse(source)
+  result = Prism.parse(source)
+  handle_parse_errors(result) if result.failure?
+  serialize_ast_with_comments(result)
+end
 ```
 
 ---
 
-<GradientHeading :animated="true">
-  グラデーション見出し
-</GradientHeading>
+# AST変換 — 具体例
 
-アニメーション付きのグラデーション効果
+<TwoColumnLayout>
+  <template #left>
 
-<v-clicks>
+このRubyコードを入力すると…
 
-- Purple to Blue のグラデーション
-- アニメーションするテキストシャドウ
-- oklch color space の活用
+```ruby
+def greet(name)
+  puts "Hello, #{name}"
+end
+```
 
-</v-clicks>
+  </template>
+  <template #right>
+
+PrismBridge がこのような JSON に変換する
+
+```json
+{
+  "node_type": "def_node",
+  "metadata": {
+    "name": "greet",
+    "parameters_count": "1"
+  },
+  "children": [
+    { "node_type": "required_parameter_node" },
+    { "node_type": "statements_node" }
+  ]
+}
+```
+
+  </template>
+</TwoColumnLayout>
+
+Rust 側はこの JSON を受け取り、AST として再構築してフォーマットを行う
+
+---
+layout: center
+class: slide-gradient-bg
+---
+
+# <span class="gradient-heading">Foreign Function Interface</span>
+
+---
+
+# Magnus — Ruby bindings for Rust
+
+- Rust で Ruby の拡張 gem を書くためのライブラリ
+- Rust の関数を Ruby のメソッドとして公開できる
+- Ruby ↔ Rust 間の型変換を自動で処理
+- 引数のバリデーションやエラーハンドリングも Ruby の慣習に沿って動作
+- rfmt では Magnus 経由で Rust のフォーマッタを Ruby から呼び出している
+
+---
+
+# Ruby-Rust 間のFFI境界
+
+<TwoColumnLayout>
+  <template #left>
+
+<br><br><br>
+
+```ruby
+# Ruby側 (lib/rfmt.rb)
+def self.format(source)
+  prism_json = PrismBridge.parse(source)
+  format_code(source, prism_json)
+end
+```
+
+  </template>
+  <template #right>
+
+```rust
+// Rust側 (ext/rfmt/src/lib.rs)
+#[magnus::init]
+fn init(ruby: &Ruby) -> Result<(), Error> {
+    let module =
+      ruby.define_module("Rfmt")?;
+
+    module.define_singleton_method(
+      "format_code",
+      function!(format_ruby_code, 2))?;
+    module.define_singleton_method(
+      "parse_to_json",
+      function!(parse_to_json, 1))?;
+    module.define_singleton_method(
+      "rust_version",
+      function!(rust_version, 0))?;
+    Ok(())
+}
+```
+
+  </template>
+</TwoColumnLayout>
+
+- Magnus crate による Ruby-Rust FFI
+- Ruby から呼べるフォーマット・パース・バージョン取得の3つの関数を公開
+- Ruby と Rust 間のデータ型変換は Magnus が自動で処理
+
+---
+layout: center
+class: slide-gradient-bg
+---
+
+# <span class="gradient-heading">Command Line Interface</span>
+
+---
+
+# CLI の概要
+
+`lib/rfmt/cli.rb`
+
+- Thor ベースのCLI — Thor gem で宣言的なコマンド定義
+- コマンド: format / check / version / config / cache / init
+- 並列処理の自動判定 (ファイル数・サイズに基づくヒューリスティクス)
+  - 余談で、10fileほどであれば並列化しない方が速い
+- diff表示: diffy / diff-lcs gem (unified / side_by_side / color)
+- プログレス表示
+
+---
+
+# CLI の処理フロー
+
+1. `rfmt [FILES]` コマンド実行
+2. YAML設定ファイルを探索・読込 → 対象ファイルを展開 → キャッシュで変更有無を判定
+   - ファイル数やサイズに応じて並列/逐次を自動判定
+3. フォーマット実行 — 逐次 or 並列処理
+   - 各ファイルを読み込み → フォーマット → 結果を比較
+4. 結果処理 — 書き込み / diff表示 / check結果の出力 → キャッシュ更新
+
+---
+layout: center
+class: slide-gradient-bg
+---
+
+# <span class="gradient-heading">Configuration & Cache</span>
+
+---
+
+# Configuration & Cache
+
+<TwoColumnLayout>
+  <template #left>
+    <p><strong>Configuration - 設定管理</strong></p>
+    <p><code>lib/rfmt/configuration.rb</code></p>
+    <ul>
+      <li>YAML設定ファイルの探索・読込・バリデーション</li>
+      <li>ファイルglobパターンによるinclude/exclude</li>
+      <li>デフォルト設定とのマージ</li>
+    </ul>
+    <p>Ruby の得意分野: YAML パース、Dir.glob によるファイル探索</p>
+  </template>
+  <template #right>
+    <p><strong>Cache - キャッシュシステム</strong></p>
+    <p><code>lib/rfmt/cache.rb</code></p>
+    <ul>
+      <li>mtime (ファイル更新日時) ベースの変更検知</li>
+      <li>~/.cache/rfmt/cache.json にJSONで永続化</li>
+      <li>clear / prune / stats 操作</li>
+    </ul>
+    <p>低頻度・軽量処理のためRubyで十分な速度</p>
+  </template>
+</TwoColumnLayout>
+
+---
+layout: center
+class: slide-gradient-bg
+---
+
+# <span class="gradient-heading">ネイティブ拡張 & エディタ連携</span>
+
+---
+
+# Gem配布 & ネイティブ拡張ロード
+
+`lib/rfmt/native_extension_loader.rb`
+
+- rfmt.gemspec + ext/rfmt/extconf.rb による標準的なnative extension gem構造
+- gem install rfmt で Rust 拡張含めてビルド&インストール
+- rb_sys / magnus による Ruby-Rust FFI の標準的なパターン
+- Ruby 3.0〜3.3+ のバージョン別パス対応
+
+**ビルド**: extconf.rb → Rust の Makefile を生成 → Cargo でリリースビルド → 共有ライブラリ (.bundle / .so) を出力
+
+**ロード**: Ruby のバージョンに応じたパスから共有ライブラリを自動検出して読み込み
+
+---
+
+# Ruby LSP Integration
+
+`lib/ruby_lsp/rfmt/addon.rb` / `lib/ruby_lsp/rfmt/formatter_runner.rb`
+
+- Ruby LSP の Addon として登録
+- format-on-save で rfmt を呼び出し
+- FormatterRunner インターフェースに準拠
 
 <br>
 
-<div class="mt-8">
+Ruby LSP の Addon は Ruby で書く必要があるため、Ruby Layer に実装
 
-```css
-.gradient-heading {
-  background: linear-gradient(135deg,
-    oklch(0.65 0.25 270) 0%,
-    oklch(0.7 0.22 240) 50%,
-    oklch(0.75 0.2 210) 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
+---
+layout: center
+class: slide-gradient-bg
+---
+
+# <span class="gradient-heading">E2E テスト</span>
+
+---
+
+# テスト構成
+
+- **フォーマットテスト** — Rubyコードを入力し、期待する整形結果と比較
+  - 条件分岐、ループ、ブロック、rescue、lambda、パターンマッチなど構文ごとに網羅
+- **設定テスト** — YAML設定の探索・読込・親ディレクトリからの継承を検証
+- **CLIテスト** — コマンド実行の正常系・異常系
+- **LSP連携テスト** — Ruby LSP Addon の登録と format-on-save の動作
+- **ネイティブ拡張テスト** — Rubyバージョン別のロードパス切り替え
+
+Ruby テストと Rust テスト (`cargo test`) を `rake dev:test_all` で一括実行
+
+---
+
+# テストの具体例
+
+```ruby
+it 'formats if with elsif and else' do
+  source = "if x > 0\nputs \"positive\"\nelsif x < 0\n..."
+
+  result = Rfmt.format(source)
+
+  # フォーマット後、正しくインデントされていることを検証
+  expect(result).to eq(expected)
+end
 ```
 
-</div>
+入力のRubyコードをフォーマットし、期待するインデントや構造と一致するかを検証
 
 ---
 
-# 画像表示
+# まとめ: Ruby Layer の設計思想
 
-<CenteredImage
-  src="https://placehold.co/800x400"
-  alt="サンプル画像"
-  width="800px"
-  caption="画像のキャプション"
-/>
+- **境界の明確さ**: Ruby = パース + I/O + ユーザーインターフェース、Rust = AST処理 + コード生成
+- **Prism活用**: Rubyの公式パーサーをRuby側で呼び、JSONでRustに渡す
+- **Gemエコシステム**: Thor, diffy, parallel, ruby_lsp などのGemを活用
+- **実用性重視**: 実際のformatなどの計算負荷の高い処理をRustで、それ以外のエコシステム連携や開発者とのInterfaceをRubyで実装
 
 ---
-layout: center
----
 
-# View Transition対応
+<h1 class="text-white text-4xl font-bold mb-8">see you later 👋</h1>
 
-<v-click>
-
-<div class="text-6xl emoji">
-🎬
-</div>
-
-</v-click>
-
-<v-click>
-
-モダンブラウザのView Transition APIに対応しています
-
-</v-click>
-
----
-layout: center
-class: text-center
----
-
-<h1 class="text-white text-4xl font-bold">see you later 👋</h1>
+<div class="grid grid-cols-3 gap-6 text-left mx-8">
+  <div class="p-4 rounded-lg" style="background: oklch(0.25 0.03 260); border: 1px solid oklch(0.4 0.06 260)">
+    <p class="font-bold mb-2">Rails Girls Tokyo #18</p>
+    <p class="font-bold">コーチで参加するよ</p>
+    <a href="https://railsgirls.com/tokyo-2026-02-13.html">https://railsgirls.com/tokyo-2026-02-13</a>
+  </div>
+  <div class="p-4 rounded-lg" style="background: oklch(0.25 0.03 260); border: 1px solid oklch(0.4 0.06 260)">
+    <p class="text-sm opacity-80">PHPerKaigi 2026</p>
+    <p class="font-bold">Day1に登壇するよ</p>
+    <img src="/phperkaigi.png" alt="PHPerKaigi 2026" class="rounded mb-2" style="width: 100%;" />
+  </div>
+  <div class="p-4 rounded-lg" style="background: oklch(0.25 0.03 260); border: 1px solid oklch(0.4 0.06 260)">
+    <p class="font-bold mb-2">rfmt</p>
+    <p class="font-bold">GitHub Starしてね</p>
+    <a href="https://github.com/fs0414/rfmt">https://github.com/fs0414/rfmt</a>
+  </div>
+ </div>

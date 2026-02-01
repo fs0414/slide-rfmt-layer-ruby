@@ -8,6 +8,7 @@
 - **主な技術**: Slidev, Vue.js, TypeScript, oklch color space
 - **デザインシステム**: `design_system/` ディレクトリに完全ドキュメント化
 
+rfmt local path /Users/fujitanisora/dev/oss/rfmt/
 ---
 
 ## 🎯 タスク別の参照ドキュメント

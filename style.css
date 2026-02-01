@@ -40,7 +40,7 @@
 #slideshow,
 .slidev-page {
   background:
-    radial-gradient(ellipse 80% 50% at 0% 0%, oklch(0.6 0.2 220 / 0.35) 0%, transparent 50%),
+    radial-gradient(ellipse 150% 40% at 50% 0%, oklch(0.5 0.15 220 / 0.35) 0%, oklch(0.5 0.15 220 / 0.1) 40%, transparent 70%),
     linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-soft) 100%) !important;
 }
 
@@ -151,20 +151,24 @@ blockquote {
   border-radius: 8px;
 }
 
-/* コードブロック */
+/* インラインコード */
 code {
-  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace !important;
   font-size: 0.9em;
   padding: 0.2em 0.4em;
   border-radius: 4px;
-  background: oklch(0.9 0.03 200 / 0.15);
-  color: oklch(0.45 0.15 195);
+  background: oklch(0.9 0.03 200 / 0.15) !important;
+  color: oklch(0.75 0.15 230) !important;
 }
 
-pre code {
-  padding: 0;
-  background: transparent;
-  color: inherit;
+/* コードブロック内のcodeはリセット */
+pre code,
+.shiki code {
+  padding: 0 !important;
+  background: transparent !important;
+  color: inherit !important;
+  font-size: inherit !important;
+  border-radius: 0 !important;
 }
 
 /* Shiki コードブロックの背景調整 */
@@ -291,13 +295,6 @@ img {
   }
 }
 
-/* スライド背景のバリエーション */
-.slide-gradient-bg {
-  background: linear-gradient(135deg,
-    color-mix(in oklch, var(--color-primary) 5%, var(--color-bg)) 0%,
-    var(--color-bg) 100%
-  );
-}
 
 /* Emoji統合サポート */
 .emoji {
