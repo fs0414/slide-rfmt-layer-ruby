@@ -425,7 +425,7 @@ end
     <a href="https://railsgirls.com/tokyo-2026-02-13.html">https://railsgirls.com/tokyo-2026-02-13</a>
   </div>
   <div class="p-4 rounded-lg" style="background: oklch(0.25 0.03 260); border: 1px solid oklch(0.4 0.06 260)">
-    <p class="text-sm opacity-80">PHPerKaigi 2026</p>
+    <p class="font-bold mb-2">PHPerKaigi 2026</p>
     <p class="font-bold">Day1に登壇するよ</p>
     <img src="/phperkaigi.png" alt="PHPerKaigi 2026" class="rounded mb-2" style="width: 100%;" />
   </div>
