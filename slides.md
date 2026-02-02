@@ -48,7 +48,7 @@ seoMeta:
       </div>
       <div class="flex items-center gap-2">
         <carbon-building class="text-lg" />
-        <span>toridori inc engineer</span>
+        <span>株式会社トリドリ, product engineer</span>
       </div>
       <div class="flex items-center gap-2">
         <carbon-logo-x class="text-lg" />
@@ -63,6 +63,9 @@ seoMeta:
         <a href="https://sorafujitani.me/">sorafujitani.me</a>
       </div>
     </div>
+    <br /><br /><br />
+    <div>最近のtips</div>
+    <div><p>年末にClaudeで個人サイトをつくった。<br />デザインをいい感じにして見せびらかしたら友人に「いるよねこういうヤツ...」といわれた</p></div>
   </div>
   <div class="flex justify-center" style="margin-top: -1.5rem">
     <CenteredImage
@@ -185,25 +188,6 @@ seoMeta:
 
 ---
 
-# PrismとのIntegration
-
-- PrismはRuby標準のパーサーGem
-- Ruby側でPrismを呼ぶのが最も自然
-- RustからPrismを呼ぶにはRuby VMを経由するFFIが必要で複雑になる
-- Ruby側でPrism ASTを走査し、Rust側が処理しやすい形式への事前処理を行う役割
-
-`lib/rfmt/prism_bridge.rb`
-
-```ruby
-def self.parse(source)
-  result = Prism.parse(source)
-  handle_parse_errors(result) if result.failure?
-  serialize_ast_with_comments(result)
-end
-```
-
----
-
 # AST変換 — 具体例
 
 <TwoColumnLayout>
@@ -240,6 +224,25 @@ PrismBridge がこのような JSON に変換する
 </TwoColumnLayout>
 
 Rust 側はこの JSON を受け取り、AST として再構築してフォーマットを行う
+
+---
+
+# PrismとのIntegration
+
+- PrismはRuby標準のパーサーGem
+- Ruby側でPrismを呼ぶのが最も自然
+- RustからPrismを呼ぶにはRuby VMを経由するFFIが必要で複雑になる
+- Ruby側でPrism ASTを走査し、Rust側が処理しやすい形式への事前処理を行う役割
+
+`lib/rfmt/prism_bridge.rb`
+
+```ruby
+def self.parse(source)
+  result = Prism.parse(source)
+  handle_parse_errors(result) if result.failure?
+  serialize_ast_with_comments(result)
+end
+```
 
 ---
 
