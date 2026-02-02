@@ -171,7 +171,7 @@ seoMeta:
 
 ---
 
-# PrismBridge とは
+# PrismBridge
 
 `lib/rfmt/prism_bridge.rb` / `lib/rfmt/prism_node_extractor.rb`
 
