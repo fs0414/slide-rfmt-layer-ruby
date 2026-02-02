@@ -19,12 +19,12 @@ info: |
   rfmt Ruby Layer — Rubyの高速コードフォーマッタ rfmt のRuby層の設計と実装について
 seoMeta:
   ogTitle: rfmt Ruby Layer
-  ogDescription: Rubyの高速コードフォーマッタ rfmt のRuby層の設計と実装について
+  ogDescription: Rubyのコードフォーマッタ rfmt のRuby layerの設計と実装について
   ogImage: https://fs0414.github.io/slide-rfmt-layer-ruby/og.png
   ogUrl: https://fs0414.github.io/slide-rfmt-layer-ruby/
   twitterCard: summary_large_image
   twitterTitle: rfmt Ruby Layer
-  twitterDescription: Rubyの高速コードフォーマッタ rfmt のRuby層の設計と実装について
+  twitterDescription: Rubyのコードフォーマッタ rfmt のRuby layerの設計と実装について
   twitterImage: https://fs0414.github.io/slide-rfmt-layer-ruby/og.png
 ---
 
@@ -77,6 +77,21 @@ seoMeta:
 
 ---
 
+# TOC
+
+<div style="display: flex; justify-content: center; margin-top: 2rem;">
+<div style="display: flex; flex-direction: column; gap: 1.4rem; text-align: left;">
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.7 0.1 215); font-weight: 600;">PrismBridge</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.7 0.1 215); font-weight: 600;">Foreign Function Interface</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.7 0.1 215); font-weight: 600;">Command Line Interface</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.7 0.1 215); font-weight: 600;">Configuration & Cache</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.7 0.1 215); font-weight: 600;">Native Extension & Editor Integration</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.7 0.1 215); font-weight: 600;">E2E test</p>
+</div>
+</div>
+
+---
+
 # rfmt
 
 - 高速なRuby code formatter
@@ -86,7 +101,7 @@ seoMeta:
 - GitHub: https://github.com/fs0414/rfmt
   - いまStar数55くらい
 - RubyGems: https://rubygems.org/gems/rfmt
-  - 資料書いてる時で9937 installs
+  - 資料書いてる時で9945 installs
 - Zenn: https://zenn.dev/soramarjr/articles/0b2464bc09b643
 
 ---
@@ -140,11 +155,19 @@ seoMeta:
 </div>
 
 ---
-layout: center
-class: slide-gradient-bg
----
 
-# <span class="gradient-heading">PrismBridge</span>
+# TOC
+
+<div style="display: flex; justify-content: center; margin-top: 2rem;">
+<div style="display: flex; flex-direction: column; gap: 1.4rem; text-align: left;">
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.9 0.12 215); font-weight: 700;">PrismBridge</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">Foreign Function Interface</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">Command Line Interface</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">Configuration & Cache</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">Native Extension & Editor Integration</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">E2E test</p>
+</div>
+</div>
 
 ---
 
@@ -219,11 +242,19 @@ PrismBridge がこのような JSON に変換する
 Rust 側はこの JSON を受け取り、AST として再構築してフォーマットを行う
 
 ---
-layout: center
-class: slide-gradient-bg
----
 
-# <span class="gradient-heading">Foreign Function Interface</span>
+# TOC
+
+<div style="display: flex; justify-content: center; margin-top: 2rem;">
+<div style="display: flex; flex-direction: column; gap: 1.4rem; text-align: left;">
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">PrismBridge</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.9 0.12 215); font-weight: 700;">Foreign Function Interface</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">Command Line Interface</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">Configuration & Cache</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">Native Extension & Editor Integration</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">E2E test</p>
+</div>
+</div>
 
 ---
 
@@ -283,11 +314,19 @@ fn init(ruby: &Ruby) -> Result<(), Error> {
 - Ruby と Rust 間のデータ型変換は Magnus が自動で処理
 
 ---
-layout: center
-class: slide-gradient-bg
----
 
-# <span class="gradient-heading">Command Line Interface</span>
+# TOC
+
+<div style="display: flex; justify-content: center; margin-top: 2rem;">
+<div style="display: flex; flex-direction: column; gap: 1.4rem; text-align: left;">
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">PrismBridge</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">Foreign Function Interface</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.9 0.12 215); font-weight: 700;">Command Line Interface</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">Configuration & Cache</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">Native Extension & Editor Integration</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">E2E test</p>
+</div>
+</div>
 
 ---
 
@@ -314,11 +353,19 @@ class: slide-gradient-bg
 6. **キャッシュ更新** — 次回の実行を速くするために、処理済みファイルの情報を保存
 
 ---
-layout: center
-class: slide-gradient-bg
----
 
-# <span class="gradient-heading">Configuration & Cache</span>
+# TOC
+
+<div style="display: flex; justify-content: center; margin-top: 2rem;">
+<div style="display: flex; flex-direction: column; gap: 1.4rem; text-align: left;">
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">PrismBridge</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">Foreign Function Interface</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">Command Line Interface</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.9 0.12 215); font-weight: 700;">Configuration & Cache</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">Native Extension & Editor Integration</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">E2E test</p>
+</div>
+</div>
 
 ---
 
@@ -348,11 +395,19 @@ class: slide-gradient-bg
 </TwoColumnLayout>
 
 ---
-layout: center
-class: slide-gradient-bg
----
 
-# <span class="gradient-heading">ネイティブ拡張 & エディタ連携</span>
+# TOC
+
+<div style="display: flex; justify-content: center; margin-top: 2rem;">
+<div style="display: flex; flex-direction: column; gap: 1.4rem; text-align: left;">
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">PrismBridge</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">Foreign Function Interface</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">Command Line Interface</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">Configuration & Cache</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.9 0.12 215); font-weight: 700;">Native Extension & Editor Integration</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">E2E test</p>
+</div>
+</div>
 
 ---
 
@@ -384,11 +439,19 @@ class: slide-gradient-bg
 Ruby LSP の Addon は Ruby で書く必要があるため、Ruby Layer に実装
 
 ---
-layout: center
-class: slide-gradient-bg
----
 
-# <span class="gradient-heading">E2E test</span>
+# TOC
+
+<div style="display: flex; justify-content: center; margin-top: 2rem;">
+<div style="display: flex; flex-direction: column; gap: 1.4rem; text-align: left;">
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">PrismBridge</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">Foreign Function Interface</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">Command Line Interface</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">Configuration & Cache</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.35 0.03 270);">Native Extension & Editor Integration</p>
+<p style="font-size: 1.8rem; margin: 0; color: oklch(0.9 0.12 215); font-weight: 700;">E2E test</p>
+</div>
+</div>
 
 ---
 
@@ -422,7 +485,7 @@ end
 
 ---
 
-# まとめ: Ruby Layer の設計思想
+# まとめ
 
 - **境界の明確さ**: Ruby = パース + I/O + ユーザーインターフェース、Rust = AST処理 + コード生成
 - **Prism活用**: Rubyの公式パーサーをRuby側で呼び、JSONでRustに渡す
