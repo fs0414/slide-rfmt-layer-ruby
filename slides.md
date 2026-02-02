@@ -15,6 +15,28 @@ fonts:
   sans: 'Roboto'
   serif: 'Roboto Slab'
   mono: 'Fira Code'
+info: |
+  rfmt Ruby Layer — Rubyの高速コードフォーマッタ rfmt のRuby層の設計と実装について
+head:
+  meta:
+    - property: og:title
+      content: rfmt Ruby Layer
+    - property: og:description
+      content: Rubyの高速コードフォーマッタ rfmt のRuby層の設計と実装について
+    - property: og:image
+      content: https://fs0414.github.io/slide-rfmt-layer-ruby/og.png
+    - property: og:url
+      content: https://fs0414.github.io/slide-rfmt-layer-ruby/
+    - property: og:type
+      content: website
+    - name: twitter:card
+      content: summary_large_image
+    - name: twitter:title
+      content: rfmt Ruby Layer
+    - name: twitter:description
+      content: Rubyの高速コードフォーマッタ rfmt のRuby層の設計と実装について
+    - name: twitter:image
+      content: https://fs0414.github.io/slide-rfmt-layer-ruby/og.png
 ---
 
 <CoverSlide
@@ -116,11 +138,11 @@ fonts:
 
 ---
 
-# データフロー
+# format実行フロー
 
 <div class="text-2xl leading-loose">
 
-1. **Ruby source code** を受け取る
+1. Ruby source code を受け取る
 2. Prism でパースして **AST** を取得
 3. PrismBridge で AST を走査し、Rust が処理できる **JSON** に変換
 4. JSON を FFI 経由で Rust に渡す
@@ -377,7 +399,7 @@ layout: center
 class: slide-gradient-bg
 ---
 
-# <span class="gradient-heading">E2E テスト</span>
+# <span class="gradient-heading">E2E test</span>
 
 ---
 

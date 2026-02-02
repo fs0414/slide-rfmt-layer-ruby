@@ -73,8 +73,9 @@ const props = withDefaults(defineProps<Props>(), {
 
 .cover-title {
   margin-bottom: 0;
-  font-size: clamp(1.8rem, 4vw, 3rem) !important;
+  font-size: clamp(2.5rem, 6vw, 4.5rem) !important;
   line-height: 1.1;
+  letter-spacing: -0.03em;
 }
 
 .cover-subtitle {
@@ -83,7 +84,7 @@ const props = withDefaults(defineProps<Props>(), {
 }
 
 .cover-meta {
-  font-size: 0.875rem;
+  font-size: clamp(1rem, 2vw, 1.3rem);
   text-align: center;
   color: oklch(0.85 0.02 270);
 }
